@@ -18,13 +18,13 @@ public class User {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(columnDefinition = "username", length = 50, nullable = false)
+    @Column(name = "username", length = 50, nullable = false)
     private String username;
 
-    @Column(columnDefinition = "email", length = 255, nullable = false, unique = true) // constraint on the ORM lvl
+    @Column(name = "email", length = 255, nullable = false, unique = true) // constraint on the ORM lvl
     private String email;
 
-    @Column(columnDefinition = "password_hash", nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
 
