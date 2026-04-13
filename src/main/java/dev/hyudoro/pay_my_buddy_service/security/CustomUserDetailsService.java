@@ -12,9 +12,11 @@ import dev.hyudoro.pay_my_buddy_service.entity.User;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
+
     public CustomUserDetailsService(UserRepository userRepository){
         this.userRepository = userRepository;
     }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -28,4 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                .roles("USER")
                .build();
     }
+
+
 }
