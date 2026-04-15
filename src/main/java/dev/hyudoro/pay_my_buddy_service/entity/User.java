@@ -1,5 +1,7 @@
 package dev.hyudoro.pay_my_buddy_service.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -18,17 +20,22 @@ public class User {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "username", length = 50, nullable = false)
+    @Column(length = 50, nullable = false)
     private String username;
 
-    @Column(name = "email", length = 255, nullable = false, unique = true) // constraint on the ORM lvl
+    @Column(columnDefinition = "citext", nullable = false, unique = true) // constraint on the ORM lvl
     private String email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal balance;
 
-    protected User(){
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    public User(){  //jpa.
     }
 
     // Hibernate generates the id when persisting. not setter needed for Id.
@@ -38,10 +45,13 @@ public class User {
     public void setUsername(String username) { this.username = username; }
 
     public String getEmail(){ return email; }
-    public void setEmail(String email){ this.email = email; }
+    public void setEmail(String email){ this.email = email.toLowerCase(); }
 
-    public String getPasswordHash(){ return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public String getHashedPassword(){ return passwordHash; }
+    public void setHashedPassword(String passwordHash) { this.passwordHash = passwordHash; }
 
+    public BigDecimal getBalance(){ return balance; }
+    public void setBalance(BigDecimal balance){ this.balance = balance; }
 
+    public LocalDateTime getDateCreation(){ return createdAt; }
 }
