@@ -3,6 +3,9 @@
 -- UUID generation (pgcrypto available since PG 8.3)
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+
+CREATE EXTENSION IF NOT EXISTS "citext";
+
 -- Teardown (order matters: dependents first)
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS connections;
@@ -13,8 +16,10 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
        username VARCHAR(50) NOT NULL,
-       email VARCHAR(255) NOT NULL UNIQUE, -- we enforce the rule od the DB lvl.
-       password_hash TEXT NOT NULL
+       email CITEXT NOT NULL UNIQUE CHECK (char_length(email) <= 254), -- we enforce the rule at the DB lvl.
+       password_hash TEXT NOT NULL,
+       balance DECIMAL(15,2) NOT NULL DEFAULT 0,
+       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE connections (
@@ -24,7 +29,7 @@ CREATE TABLE connections (
        CONSTRAINT pk_connections
                    PRIMARY KEY (user_id, connection_user_id),
 
-       CONSTRAINT chk_connections_ordering       -- Enusre data integrity.
+       CONSTRAINT chk_connections_ordering       -- Ensure data integrity.
                    CHECK (user_id < connection_user_id)
 );
 
@@ -50,14 +55,14 @@ CREATE TABLE transactions (
 WITH
 
 alice AS (
-INSERT INTO users (username, email, password_hash)
-VALUES ('alice', 'alice@gmail.com', 'aabbcc')
+INSERT INTO users (username, email, password_hash,balance)
+VALUES ('alice', 'alice@gmail.com', 'aabbcc', 1000)
 RETURNING id
 ),
 
 bob AS (
-INSERT INTO users (username, email,password_hash)
-VALUES ('bob', 'bob@gmail.com', 'ddeeff')
+INSERT INTO users (username, email,password_hash,balance)
+VALUES ('bob', 'bob@gmail.com', 'ddeeff', 1000)
 RETURNING id
 ),
 

@@ -1,6 +1,6 @@
 package dev.hyudoro.pay_my_buddy_service.security;
 import dev.hyudoro.pay_my_buddy_service.repository.UserRepository;
-
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -16,8 +16,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public CustomUserDetailsService(UserRepository userRepository){
         this.userRepository = userRepository;
     }
-
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -26,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return  org.springframework.security.core.userdetails.User
                .withUsername(user.getEmail())
-               .password(user.getPasswordHash())
+               .password(user.getHashedPassword())
                .roles("USER")
                .build();
     }

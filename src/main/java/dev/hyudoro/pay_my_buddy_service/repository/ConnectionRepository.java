@@ -27,7 +27,4 @@ public interface ConnectionRepository extends JpaRepository<Connection, Connecti
            OR c.connectedUser.id = :userId
            """)
     List<User> findConnectionsOf(@Param("userId") UUID userId);
-
-
-
 }
