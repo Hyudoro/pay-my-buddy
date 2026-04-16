@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,14 +24,14 @@ public class User {
     @Column(length = 50, nullable = false)
     private String username;
 
-    @Column(columnDefinition = "citext", nullable = false, unique = true) // constraint on the ORM lvl
+    @Column(columnDefinition = "citext", nullable = false, unique = true) // constraint at the ORM lvl
     private String email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -54,4 +55,9 @@ public class User {
     public void setBalance(BigDecimal balance){ this.balance = balance; }
 
     public LocalDateTime getDateCreation(){ return createdAt; }
+
+    @PrePersist
+    protected void onCreate(){
+        this.createdAt =LocalDateTime.now();
+    }
 }

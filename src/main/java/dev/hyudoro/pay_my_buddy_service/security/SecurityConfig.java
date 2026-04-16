@@ -20,7 +20,8 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http // Disable CSRF
+        http // Disable CSRF and CORS (temporary)
+            .cors(cors -> cors.disable())
             .csrf(csrf -> csrf.disable())
              // Defining which routes are public and protected.
             .authorizeHttpRequests(auth -> auth
