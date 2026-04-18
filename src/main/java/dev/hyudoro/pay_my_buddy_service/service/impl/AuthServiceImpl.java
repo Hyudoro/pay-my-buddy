@@ -49,5 +49,4 @@ public class AuthServiceImpl implements AuthService{
                 authManager
                 .authenticate(authManager.authenticate(token)));
     }
-
 }
