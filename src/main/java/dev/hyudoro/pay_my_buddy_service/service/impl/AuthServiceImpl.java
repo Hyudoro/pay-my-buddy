@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import dev.hyudoro.pay_my_buddy_service.dto.LoginRequest;
 import dev.hyudoro.pay_my_buddy_service.dto.RegisterRequest;
 import dev.hyudoro.pay_my_buddy_service.entity.User;
+import dev.hyudoro.pay_my_buddy_service.exception.EmailAlreadyExistsException;
 import dev.hyudoro.pay_my_buddy_service.repository.UserRepository;
 import dev.hyudoro.pay_my_buddy_service.service.inter.AuthService;
 
@@ -29,7 +30,7 @@ public class AuthServiceImpl implements AuthService{
         String email = request.email();
         String password = request.password();
         if(repository.existsByEmail(email)){
-            throw new IllegalArgumentException("Email already used");
+            throw new EmailAlreadyExistsException("Email already used");
         }
         String hashedPassword = passwordEncoder.encode(password);
 
