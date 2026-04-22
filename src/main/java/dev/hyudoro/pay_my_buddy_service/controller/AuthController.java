@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController{
+public class AuthController {
 
     private final AuthService service;
 
@@ -32,8 +33,12 @@ public class AuthController{
         return ResponseEntity.noContent().build();
     }
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request){
+    public ResponseEntity<Void> login(HttpServletRequest httpRequest,
+                                      HttpServletResponse httpResponse,
+                                      @RequestBody @Valid LoginRequest request){
         service.login(request);
+        HttpSessionSecurityContextRepository sessioncookie = new HttpSessionSecurityContextRepository();
+        sessioncookie.saveContext(SecurityContextHolder.getContext(),httpRequest,httpResponse);
         return ResponseEntity.ok().build();
     }
     @PostMapping("/logout")
