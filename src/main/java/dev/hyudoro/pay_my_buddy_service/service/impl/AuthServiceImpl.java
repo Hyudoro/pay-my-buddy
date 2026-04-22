@@ -48,6 +48,6 @@ public class AuthServiceImpl implements AuthService{
             .getContext()
             .setAuthentication(
                 authManager
-                .authenticate(authManager.authenticate(token)));
+                .authenticate(token));
     }
 }

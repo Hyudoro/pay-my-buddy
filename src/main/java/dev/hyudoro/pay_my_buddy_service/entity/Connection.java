@@ -40,5 +40,4 @@ public class Connection {
     public User getConnectedUser () { return connectedUser; }
 
     //No setters, a connection is immutable.
-
 }

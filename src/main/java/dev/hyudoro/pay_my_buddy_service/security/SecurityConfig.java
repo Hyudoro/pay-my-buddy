@@ -53,5 +53,4 @@ public class SecurityConfig {
         providerManager.setEraseCredentialsAfterAuthentication(false);
         return providerManager;
     }
-
 }
