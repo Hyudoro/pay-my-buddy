@@ -14,17 +14,10 @@ import dev.hyudoro.pay_my_buddy_service.entity.User;
 public interface ConnectionRepository extends JpaRepository<Connection, ConnectionId>{
 
     @Query("""
-           SELECT
-            CASE
-             WHEN c.user.id = :userId
-              THEN
-                c.connectedUser
-              ELSE
-                c.user
-            END
-           FROM Connection c
-           WHERE c.user.id = :userId
-           OR c.connectedUser.id = :userId
+           SELECT c.connectedUser FROM Connection c WHERE c.user.id =:userId
+           UNION
+           SELECT c.user FROM Connection c WHERE c.connectedUser.id =:userId
            """)
     List<User> findConnectionsOf(@Param("userId") UUID userId);
+
 }

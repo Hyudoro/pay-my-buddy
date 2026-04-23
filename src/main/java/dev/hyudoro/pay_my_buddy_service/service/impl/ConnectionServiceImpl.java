@@ -1,11 +1,13 @@
 package dev.hyudoro.pay_my_buddy_service.service.impl;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import dev.hyudoro.pay_my_buddy_service.dto.ConnectionRequest;
+import dev.hyudoro.pay_my_buddy_service.dto.UserConnectionResponse;
 import dev.hyudoro.pay_my_buddy_service.entity.Connection;
 import dev.hyudoro.pay_my_buddy_service.entity.ConnectionId;
 import dev.hyudoro.pay_my_buddy_service.entity.User;
@@ -52,5 +54,22 @@ public class ConnectionServiceImpl implements ConnectionService{
             connectionRepository.save(new Connection(smallestId.equals(user.getId()) ? user : connectionUser,
                                                      (largestId.equals(connectionUser.getId())) ? connectionUser : user));
         }
+    }
+
+    @Override
+    public List<UserConnectionResponse> listConnection() {
+        User currentUser = (userRepository.findByEmail(
+                         (SecurityContextHolder
+                                               .getContext()
+                                               .getAuthentication()
+                                               .getName())))
+                         .orElseThrow(() -> new UserNotFoundException("user not found"));
+
+        List<UserConnectionResponse> connections = connectionRepository
+            .findConnectionsOf(currentUser.getId())
+            .stream()
+            .map(user -> new UserConnectionResponse(user.getUsername(),user.getId()))
+            .toList();
+        return connections;
     }
 }
