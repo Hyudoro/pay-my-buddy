@@ -45,22 +45,24 @@ public class Transaction {
         this.createdAt = LocalDateTime.now();
     }
 
-    protected Transaction() {}
+    protected Transaction() {} //JPA
+
+    public Transaction(User sender, User receiver, String description, BigDecimal amount){
+        this.sender = sender;
+        this.receiver = receiver;
+        this.description = description;
+        this.amount = amount;
+    }
 
     public UUID getId() { return id; }
 
     public User getSender() { return sender; }
-    public void setSender(User sender) { this.sender = sender; }
 
     public User getReceiver() { return receiver; }
-    public void setReceiver(User receiver) { this.receiver = receiver; }
 
     public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
 
     public BigDecimal getAmount(){ return amount; }
-    public void setAmount(BigDecimal amount){ this.amount = amount;  }
 
     public LocalDateTime getCreatedAt(){ return createdAt; }
-
 }

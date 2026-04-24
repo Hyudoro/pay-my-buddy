@@ -29,9 +29,20 @@ public class GlobalExceptionHandler{
         return buildErrorResponse(HttpStatus.CONFLICT,"ALREADY_CONNECTED",error.getMessage());
     }
 
+    @ExceptionHandler(ConnectionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ConnectionNotFoundException error){
+        return buildErrorResponse(HttpStatus.NOT_FOUND, "CONNECTION_NOT_FOUND", error.getMessage());
+    }
 
+    @ExceptionHandler(SenderInsufficientBalanceException.class)
+    public ResponseEntity<ErrorResponse> handle(SenderInsufficientBalanceException error){
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "INSUFFICIENT_BALANCE", error.getMessage());
+    }
 
-
+    @ExceptionHandler(SelfTransactionException.class)
+    public ResponseEntity<ErrorResponse> handle(SelfTransactionException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST,"USER_SELF_TRANSACTION", error.getMessage());
+    }
 
 
 
