@@ -1,5 +1,6 @@
 package dev.hyudoro.pay_my_buddy_service.service.impl;
 import dev.hyudoro.pay_my_buddy_service.dto.TransactionRequest;
+import dev.hyudoro.pay_my_buddy_service.dto.UserTransactionResponse;
 import dev.hyudoro.pay_my_buddy_service.entity.ConnectionId;
 import dev.hyudoro.pay_my_buddy_service.entity.Transaction;
 import dev.hyudoro.pay_my_buddy_service.entity.User;
@@ -14,6 +15,8 @@ import dev.hyudoro.pay_my_buddy_service.service.inter.TransactionService;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,4 +63,10 @@ public class TransactionServiceImpl implements TransactionService {
         receiver.setBalance(receiver.getBalance().add(request .amount()));
     }
 
+    @Override
+    public Page<UserTransactionResponse> listTransaction(Pageable pageable) {
+        User currentUser = (userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()))
+            .orElseThrow(() -> new UserNotFoundException("current user not found"));
+        return transactionRepository.findTransactionsOf(currentUser.getId(),pageable);
+    }
 }
