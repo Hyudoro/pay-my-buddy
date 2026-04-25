@@ -3,6 +3,9 @@ package dev.hyudoro.pay_my_buddy_service.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,13 +40,14 @@ public class Transaction {
     @Column(nullable = false, precision = 15, scale = 2) //We enforce the rule at the ORM lvl.
     private BigDecimal amount;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    private void prePersist(){
-        this.createdAt = LocalDateTime.now();
-    }
+    //@PrePersist
+    //private void prePersist(){
+    //    this.createdAt = LocalDateTime.now();
+    //}
 
     protected Transaction() {} //JPA
 
