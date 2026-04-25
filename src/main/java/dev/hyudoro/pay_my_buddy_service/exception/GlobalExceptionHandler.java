@@ -44,7 +44,15 @@ public class GlobalExceptionHandler{
         return buildErrorResponse(HttpStatus.BAD_REQUEST,"USER_SELF_TRANSACTION", error.getMessage());
     }
 
+    @ExceptionHandler(EmptyUpdateRequestException.class)
+    public ResponseEntity<ErrorResponse> handle(EmptyUpdateRequestException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "EMPTY_UPDATE_REQUEST", error.getMessage());
+    }
 
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidPasswordException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "BAD_CREDENTIALS_REQUEST", error.getMessage());
+    }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String errorTag, String message){
         return ResponseEntity.status(status).body(new ErrorResponse(status.value(),errorTag,message));
