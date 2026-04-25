@@ -40,7 +40,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(16); // more costful for security.
+        return new BCryptPasswordEncoder(10); // more costful for security.
     }
 
     @Bean
