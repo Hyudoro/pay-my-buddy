@@ -31,7 +31,7 @@ public class GlobalExceptionHandler{
 
     @ExceptionHandler(ConnectionNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(ConnectionNotFoundException error){
-        return buildErrorResponse(HttpStatus.NOT_FOUND, "CONNECTION_NOT_FOUND", error.getMessage());
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "CONNECTION_NOT_FOUND", error.getMessage());
     }
 
     @ExceptionHandler(SenderInsufficientBalanceException.class)
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler{
 
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidPasswordException error){
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "BAD_CREDENTIALS_REQUEST", error.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "INVALID_CURRENT_PASSWORD", error.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String errorTag, String message){

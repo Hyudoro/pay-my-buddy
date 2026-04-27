@@ -56,6 +56,7 @@ public class ConnectionServiceImpl implements ConnectionService{
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserConnectionResponse> listConnection() {
         User currentUser = (userRepository.findByEmail(
