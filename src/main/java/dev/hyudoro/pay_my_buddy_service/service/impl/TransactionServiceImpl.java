@@ -63,6 +63,7 @@ public class TransactionServiceImpl implements TransactionService {
         receiver.setBalance(receiver.getBalance().add(request .amount()));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<UserTransactionResponse> listTransaction(Pageable pageable) {
         User currentUser = (userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()))

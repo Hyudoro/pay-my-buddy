@@ -24,6 +24,7 @@ public class ProfileServiceImpl implements ProfileService{
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ProfileResponse showUserData() {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
