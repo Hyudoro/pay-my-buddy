@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,15 +21,20 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http // Disable CSRF and CORS (temporary)
+        http
             .cors(cors -> cors.disable())
-            .csrf(csrf -> csrf.disable())
+            .csrf(Customizer.withDefaults())
              // Defining which routes are public and protected.
             .authorizeHttpRequests(auth -> auth
                                    .requestMatchers("/api/auth/**").permitAll()
                                    .anyRequest().authenticated()
            )
+            .formLogin(form -> form
+                       .loginPage("/login")
+                       .defaultSuccessUrl("/transfer",true)
+                       .permitAll()
+                )
+
             // Session management, spring creates/reads HttpSession.
             .sessionManagement(session -> session
                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
@@ -40,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(16); // more costful for security.
+        return new BCryptPasswordEncoder(10); // more costful for security.
     }
 
     @Bean
