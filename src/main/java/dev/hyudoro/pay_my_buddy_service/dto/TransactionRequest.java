@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 
 public record TransactionRequest(
     UUID receiverId,
-    @Positive BigDecimal amount,
+    @Positive(message = "Wrong amount") BigDecimal amount,
     String description
     )
 {}
