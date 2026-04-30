@@ -31,7 +31,7 @@ public class ConnectionViewController{
                                 RedirectAttributes redirectAttributes){
         if(bindingResult.hasErrors()){
             String errorMessage = bindingResult.getAllErrors()
-                .get(0)
+                .getFirst()
                 .getDefaultMessage();
             redirectAttributes.addFlashAttribute("error",errorMessage);
             return "redirect:/connections";}
