@@ -41,7 +41,7 @@ public class TransferController {
             String errorMessage = bindingResult.getAllErrors()
                 .get(0)
                 .getDefaultMessage();
-            redirectAttributes.addFlashAttribute("error", "Invalid amount.");
+            redirectAttributes.addFlashAttribute("error", errorMessage);
             return "redirect:/transfer";
         }
         try{
