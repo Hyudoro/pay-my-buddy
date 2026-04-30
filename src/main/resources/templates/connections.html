@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Add a connection</title>
+</head>
+
+<body>
+   <p th:if="${error}" th:text="${error}"></p>
+
+   <form th:action="@{/connections}" method="post">
+
+       <h4> Add a connection  </h4>
+       <input  type="text" name="email" placeholder="Connection email adress."/>
+       <button type="submit">Send</button>
+
+   </form>
+</body>
+</html>
