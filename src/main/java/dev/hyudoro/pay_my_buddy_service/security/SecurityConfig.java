@@ -26,7 +26,7 @@ public class SecurityConfig {
             .csrf(Customizer.withDefaults())
              // Defining which routes are public and protected.
             .authorizeHttpRequests(auth -> auth
-                                   .requestMatchers("/api/auth/**").permitAll()
+                                   .requestMatchers("/api/auth/**", "/register").permitAll()
                                    .anyRequest().authenticated()
            )
             .formLogin(form -> form
