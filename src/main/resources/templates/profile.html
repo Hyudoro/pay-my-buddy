@@ -18,9 +18,19 @@
        <summary> E-mail  <span th:text="${profile.email}"></span> </summary>
        <input  type="text" name="email" placeholder="E-mail"/>
      </details>
-
-     <p th:if="${error}" th:text="${error}"></p>
        <button type="submit">Modify</button>
    </form>
+
+   <form th:action="@{/profile/password}" method="post">
+
+     <details>
+       <summary> Password </summary>
+       <input type="text" name="oldPassword" placeholder="Old password">
+       <input type="text" name="newPassword" placeholder="New password">
+       <button type="submit">Modify</button>
+     </details>
+
+   </form>
+     <p th:if="${error}" th:text="${error}"></p>
 </body>
 </html>
