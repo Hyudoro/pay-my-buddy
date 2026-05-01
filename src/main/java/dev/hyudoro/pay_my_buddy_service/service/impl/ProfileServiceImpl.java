@@ -1,6 +1,9 @@
 package dev.hyudoro.pay_my_buddy_service.service.impl;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +22,14 @@ import dev.hyudoro.pay_my_buddy_service.service.inter.ProfileService;
 public class ProfileServiceImpl implements ProfileService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    ProfileServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder){
+    private final UserDetailsService userDetailsService;
+
+    ProfileServiceImpl(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       UserDetailsService userDetailsService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userDetailsService = userDetailsService;
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +55,18 @@ public class ProfileServiceImpl implements ProfileService{
             .orElseThrow(() -> new UserNotFoundException("user not found"));
 
         if(request.username() != null && !request.username().isBlank()) user.setUsername(request.username());
-        if(request.email() != null && !request.email().isBlank()) user.setEmail(request.email());
+
+        if(request.email() != null && !request.email().isBlank()){
+            user.setEmail(request.email());
+            userRepository.saveAndFlush(user);//important to flush so user.getEmail() actually finds the user's new email's address.
+            UserDetails updatedUser = userDetailsService.loadUserByUsername(user.getEmail());
+            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                updatedUser,
+                updatedUser.getPassword(),
+                updatedUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+        }
     }
 
     @Transactional
