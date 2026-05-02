@@ -7,6 +7,7 @@
 </head>
 
 <body>
+   <div th:replace="~{fragments/navbar :: navbar}"></div>
    <form th:action="@{/profile}" method="post">
 
      <details>
@@ -25,8 +26,8 @@
 
      <details>
        <summary> Password </summary>
-       <input type="text" name="oldPassword" placeholder="Old password">
-       <input type="text" name="newPassword" placeholder="New password">
+       <input type="password" name="oldPassword" placeholder="Old password">
+       <input type="password" name="newPassword" placeholder="New password">
        <button type="submit">Modify</button>
      </details>
 

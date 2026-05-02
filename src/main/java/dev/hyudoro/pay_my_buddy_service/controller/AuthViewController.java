@@ -1,7 +1,9 @@
 package dev.hyudoro.pay_my_buddy_service.controller;
 
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,12 +23,20 @@ public class AuthViewController{
     }
 
     @GetMapping("/login")
-    public String loginPage(){
+    public String loginPage(Model model, Authentication authentication){
+        if (authentication != null && authentication.isAuthenticated()){
+            return "redirect:/transfer";
+        }
+        model.addAttribute("isLoginPage",true);
         return "login";
     }
 
     @GetMapping("/register")
-    public String registerPage(){
+    public String registerPage(Model model, Authentication authentication){
+        if (authentication != null && authentication.isAuthenticated()){
+            return "redirect:/transfer";
+        }
+        model.addAttribute("isRegisterPage",true);
         return "register";
     }
 

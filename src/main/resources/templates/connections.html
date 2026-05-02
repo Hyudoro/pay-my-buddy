@@ -7,7 +7,9 @@
 </head>
 
 <body>
-   <p th:if="${error}" th:text="${error}"></p>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+  <p th:if="${error}" th:text="${error}"></p>
 
    <form th:action="@{/connections}" method="post">
 
