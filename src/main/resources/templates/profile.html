@@ -4,34 +4,42 @@
 
 <head>
   <title>Profile</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 
 <body>
+  <div class="container">
    <div th:replace="~{fragments/navbar :: navbar}"></div>
    <form th:action="@{/profile}" method="post">
-
-     <details>
-       <summary> Username  <span th:text="${profile.username}"></span> </summary>
-       <input  type="text" name="username" placeholder="Username"/>
-     </details>
-
-     <details>
-       <summary> E-mail  <span th:text="${profile.email}"></span> </summary>
-       <input  type="text" name="email" placeholder="E-mail"/>
-     </details>
-       <button type="submit">Modify</button>
+     <div class="profile-row">
+       <span class="profile-label">Username</span>
+       <details class="profile-value">
+         <summary th:text="${profile.username}"></summary>
+         <input  type="text" name="username" placeholder="New username"/>
+       </details>
+     </div>
+     <div class="profile-row">
+       <span class="profile-label">Mail</span>
+       <details class="profile-value">
+         <summary th:text="${profile.email}"></summary>
+         <input  type="text" name="email" placeholder="New e-mail"/>
+       </details>
+     </div>
+     <button type="submit" class="btn-orange">Modify</button>
    </form>
 
    <form th:action="@{/profile/password}" method="post">
-
-     <details>
-       <summary> Password </summary>
-       <input type="password" name="oldPassword" placeholder="Old password">
-       <input type="password" name="newPassword" placeholder="New password">
-       <button type="submit">Modify</button>
-     </details>
-
+     <div class="profile-row">
+       <span class="profile-label">Password</span>
+       <details class="profile-value">
+         <summary> password </summary>
+         <input type="password" name="oldPassword" placeholder="Old password">
+         <input type="password" name="newPassword" placeholder="New password">
+         <button type="submit" class="btn-orange">Modify</button>
+       </details>
+     </div>
    </form>
-     <p th:if="${error}" th:text="${error}"></p>
+   <p th:if="${error}" th:text="${error}"></p>
+</div>
 </body>
 </html>

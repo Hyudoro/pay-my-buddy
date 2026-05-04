@@ -4,21 +4,22 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
   <body>
-
     <nav th:fragment="navbar">
-      <div sec:authorize="isAuthenticated()">
-        <a th:href="@{/transfer}">Transfer</a>
-        <a th:href="@{/profile}">Profile</a>
-        <a th:href="@{/connections}">Connections</a>
-        <form th:action="@{/logout}" method="post">
+      <span class="nav-brand">Pay My Buddy</span>
+      <div class="nav-links">
+        <div sec:authorize="isAuthenticated()">
+          <a th:href="@{/transfer}" th:classappend="${activePage == 'transfer'} ? 'active'">Transfer</a>
+          <a th:href="@{/profile}" th:classappend="${activePage  == 'profile'} ? 'active'">Profile</a>
+          <a th:href="@{/connections}" th:classappend="${activePage == 'connections'} ? 'active'">Connections</a>
+          <form th:action="@{/logout}" method="post">
             <button type="submit">Logout</button>
-        </form>
-      </div>
+          </form>
+        </div>
       <div sec:authorize="isAnonymous()">
         <a th:href="@{/login}" th:unless="${isLoginPage}"> Login </a>
         <a th:href="@{/register}" th:unless="${isRegisterPage}"> Register </a>
+      </div>
+      </div>
     </nav>
-
   </body>
-
 </html>

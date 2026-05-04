@@ -29,6 +29,7 @@ public class TransferController {
         model.addAttribute("connections", connectionService.listConnection());
         model.addAttribute("transactions", transactionService
                            .listTransaction(PageRequest.of(0,10)));
+        model.addAttribute("activePage", "transfer");
         return "transfer";
     }
 

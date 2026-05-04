@@ -1,0 +1,144 @@
+* {
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+
+
+body {
+
+    background-color: #f0f0f0;
+    font-family: sans-serif;
+    font-size: 14px;
+    color: #333;
+
+}
+
+.container {
+
+    background: #fff;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 30px;
+    min-height: 80vh;
+
+}
+
+
+nav {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px;
+
+}
+
+
+
+.nav-brand {
+
+    font-weight: bold;
+    font-size: 15px;
+
+}
+
+
+
+.nav-links > div {
+
+    display: flex;
+    gap: 30px;
+    align-items: center;
+
+}
+
+
+
+.nav-links a {
+
+    text-decoration: none;
+    color: #333;
+
+}
+
+
+
+.nav-links a.active {
+
+    color: #4a90d9;
+
+}
+
+
+
+.nav-links form button {
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    font-family: sans-serif;
+
+}
+
+
+
+/* Profile rows */
+
+.profile-row {
+
+    display: flex;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+}
+
+
+
+.profile-label {
+
+    width: 150px;
+    font-weight: 500;
+    color: #333;
+
+}
+
+
+
+.profile-value {
+
+    color: #555;
+    flex: 1;
+
+}
+
+
+
+/* Orange button */
+
+.btn-orange {
+
+    background-color: #f5a623;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+
+}
+
+
+
+.btn-orange:hover {
+
+    background-color: #e09510;
+
+}

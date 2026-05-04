@@ -25,6 +25,7 @@ public class ProfileViewController{
     @GetMapping("/profile")
     public String profilePage(Model model){
         model.addAttribute("profile",profileService.showUserData());
+        model.addAttribute("activePage", "profile");
         return "profile";
     }
 
