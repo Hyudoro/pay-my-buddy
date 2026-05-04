@@ -1,6 +1,7 @@
 package dev.hyudoro.pay_my_buddy_service.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,7 +22,8 @@ public class ConnectionViewController{
     }
 
     @GetMapping("/connections")
-    public String connectionPage(){
+    public String connectionPage(Model model){
+        model.addAttribute("activePage", "connections");
         return "connections";
     }
 
