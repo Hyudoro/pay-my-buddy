@@ -4,19 +4,21 @@
 
 <head>
   <title>Register</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-
 <body>
-  <div th:replace="~{fragments/navbar :: navbar}"></div>
-  <form th:action="@{/register}" method="post">
-
-    <input  type="text" name="username" placeholder="Username"/>
-    <input  type="text" name="email" placeholder="E-mail"/>
-    <input  type="password" name="password" placeholder="Password"/>
-    <p th:if="${error}" th:text="${error}"></p>
-
-    <button type="submit">Send</button>
-
-  </form>
+  <div th:replace="~{fragments/navbar :: navbar}"/>
+  <div class="auth-container">
+    <div class="auth-card">
+      <button class="auth-brand">Pay My Buddy</button>
+      <form th:action="@{/register}" method="post">
+        <input  type="text" name="username" placeholder="Username"/>
+        <input  type="text" name="email" placeholder="E-mail"/>
+        <input  type="password" name="password" placeholder="Password"/>
+        <p th:if="${error}" th:text="${error}" class="error-msg"></p>
+        <button type="submit" class="btn-blue">Send</button>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
