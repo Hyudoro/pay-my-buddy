@@ -119,9 +119,6 @@ nav {
 }
 
 
-
-/* Orange button */
-
 .btn-orange {
 
     background-color: #f5a623;
@@ -140,5 +137,70 @@ nav {
 .btn-orange:hover {
 
     background-color: #e09510;
+
+}
+
+.auth-container {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+
+}
+
+.auth-card {
+
+    border: 1px solid #111;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 350px;
+
+}
+
+
+
+.auth-card input {
+
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 12px;
+
+}
+
+
+
+.auth-brand {
+
+    background-color: #f5a623;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: default;
+
+}
+
+
+
+.btn-blue {
+
+    background-color: #4a90d9;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
 
 }
