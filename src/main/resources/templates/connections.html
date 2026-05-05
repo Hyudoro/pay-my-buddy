@@ -4,19 +4,23 @@
 
 <head>
   <title>Add a connection</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
+  <div class="container">
   <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-  <p th:if="${error}" th:text="${error}"></p>
-
-   <form th:action="@{/connections}" method="post">
-
-       <h4> Add a connection  </h4>
-       <input  type="text" name="email" placeholder="Connection email adress."/>
-       <button type="submit">Send</button>
-
-   </form>
+  <div class="connection-wrapper">
+    <form th:action="@{/connections}" method="post" class="connection-form">
+      <label class="connection-label">Search for a connection</label>
+      <div class="connection-row">
+        <input  type="text" name="email" placeholder="Enter an email address" class="connection-input"/>
+        <button type="submit" class="btn-orange">Send</button>
+        <p th:if="${error}" th:text="${error}" class="error-msg"></p>
+      </div>
+    </form>
+  </div>
+  </div>
 </body>
 </html>

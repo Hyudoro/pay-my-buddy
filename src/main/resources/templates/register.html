@@ -15,8 +15,9 @@
         <input  type="text" name="username" placeholder="Username"/>
         <input  type="text" name="email" placeholder="E-mail"/>
         <input  type="password" name="password" placeholder="Password"/>
-        <p th:if="${error}" th:text="${error}" class="error-msg"></p>
         <button type="submit" class="btn-blue">Send</button>
+        <p th:if="${error}" th:text="${error}" class="error-msg"></p>
+        <p class="auth-switch">Already have an account? <a th:href="@{/login}">Login</a></p>
       </form>
     </div>
   </div>

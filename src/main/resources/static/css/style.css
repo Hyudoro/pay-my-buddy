@@ -277,3 +277,59 @@ nav {
     color: red;
     margin-bottom: 10px;
 }
+
+.connection-wrapper {
+
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+
+}
+
+.connection-form {
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+}
+
+.connection-label {
+
+    font-size: 14px;
+    font-weight: 500;
+
+}
+
+.connection-row {
+
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+}
+
+.connection-input {
+
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 300px;
+
+}
+
+.auth-switch {
+
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+
+}
+
+.auth-switch a {
+
+    color: #4a90d9;
+    text-decoration: none;
+
+}
