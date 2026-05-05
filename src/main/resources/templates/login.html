@@ -4,19 +4,20 @@
 
 <head>
     <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
   <div th:replace="~{fragments/navbar :: navbar}"/>
-  <h1>Login</h1>
-
-  <form th:action="@{/login}" method="post">
-
-    <input type="text" name="username" placeholder="Email"/>
-    <input type="password" name="password" placeholder="Password"/>
-    <button type="submit"> Login </button>
-
-  </form>
+  <div class ="auth-container">
+    <div class="auth-card">
+      <button class="auth-brand">Pay My Buddy</button>
+      <form th:action="@{/login}" method="post">
+        <input type="text" name="username" placeholder="E-mail"/>
+        <input type="password" name="password" placeholder="Password"/>
+        <button type="submit" class="btn-blue"> Login </button>
+      </form>
+    </div>
+  </div>
 </body>
-
 </html>
