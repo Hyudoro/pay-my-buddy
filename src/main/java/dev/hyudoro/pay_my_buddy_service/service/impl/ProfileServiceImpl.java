@@ -9,14 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import dev.hyudoro.pay_my_buddy_service.dto.ProfileResponse;
-import dev.hyudoro.pay_my_buddy_service.dto.ProfileUpdatePasswordRequest;
-import dev.hyudoro.pay_my_buddy_service.dto.ProfileUpdateRequest;
+import dev.hyudoro.pay_my_buddy_service.dto.ProfileUpdateDataRequest;
 import dev.hyudoro.pay_my_buddy_service.entity.User;
-import dev.hyudoro.pay_my_buddy_service.exception.EmptyUpdateRequestException;
-import dev.hyudoro.pay_my_buddy_service.exception.InvalidPasswordException;
+import dev.hyudoro.pay_my_buddy_service.exception.EmailAlreadyExistsException;
 import dev.hyudoro.pay_my_buddy_service.exception.UserNotFoundException;
 import dev.hyudoro.pay_my_buddy_service.repository.UserRepository;
 import dev.hyudoro.pay_my_buddy_service.service.inter.ProfileService;
+import dev.hyudoro.pay_my_buddy_service.service.validation.BasicInfoValidator;
+import dev.hyudoro.pay_my_buddy_service.service.validation.GlobalGuard;
+import dev.hyudoro.pay_my_buddy_service.service.validation.PasswordValidator;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -26,7 +27,8 @@ public class ProfileServiceImpl implements ProfileService{
 
     ProfileServiceImpl(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       UserDetailsService userDetailsService){
+                       UserDetailsService userDetailsService
+                       ){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
@@ -36,7 +38,7 @@ public class ProfileServiceImpl implements ProfileService{
     @Override
     public ProfileResponse showUserData() {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-            .orElseThrow(() -> new UserNotFoundException("user not found"));
+            .orElseThrow(() -> new UserNotFoundException("user not found."));
         return new ProfileResponse(user.getUsername(),
                                    user.getEmail(),
                                    user.getBalance(),
@@ -45,41 +47,44 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Transactional
     @Override
-    public void updateProfile(ProfileUpdateRequest request) {
-       if(request.username() == null || request.username().isBlank()
-          && (request.email() == null || request.email().isBlank())) throw new EmptyUpdateRequestException("request attributes are all empty");
+    public void updateProfile(ProfileUpdateDataRequest request) {
+        String userEmail= SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmailForUpdate(userEmail)
+            .orElseThrow(() -> new UserNotFoundException("user not found."));
 
-        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        GlobalGuard.check(request);
 
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new UserNotFoundException("user not found"));
+        if(!GlobalGuard.isAbsent(request.username()) || !GlobalGuard.isAbsent(request.email()))
+            updateBasicInfo(request,user);
 
-        if(request.username() != null && !request.username().isBlank()) user.setUsername(request.username());
 
-        if(request.email() != null && !request.email().isBlank()){
+        if(!GlobalGuard.isAbsent(request.oldPassword()) && !GlobalGuard.isAbsent(request.newPassword()))
+            updatePassword(request,user);
+    }
+
+    private void updateBasicInfo(ProfileUpdateDataRequest request, User user){
+        BasicInfoValidator.validate(request,user);
+
+        if(!GlobalGuard.isAbsent(request.username()))
+            user.setUsername(request.username());
+
+        if (!GlobalGuard.isAbsent(request.email())) {
+            if (userRepository.existsByEmail(request.email()))
+                throw new EmailAlreadyExistsException("email already taken.");
             user.setEmail(request.email());
-            userRepository.saveAndFlush(user);//important to flush so user.getEmail() actually finds the user's new email's address.
+            userRepository.saveAndFlush(user);
             UserDetails updatedUser = userDetailsService.loadUserByUsername(user.getEmail());
             UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
                 updatedUser,
                 updatedUser.getPassword(),
                 updatedUser.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(newAuth);
-
+           SecurityContextHolder.getContext().setAuthentication(newAuth);
         }
     }
 
-    @Transactional
-    @Override
-    public void updatePassword(ProfileUpdatePasswordRequest request) {
-        User user = userRepository.findByEmailForUpdate(SecurityContextHolder.getContext().getAuthentication().getName())
-            .orElseThrow(() -> new UserNotFoundException("user not found"));
-
-        if(passwordEncoder.matches(request.oldPassword(),user.getHashedPassword())){
-            String newPasswordEncoded = passwordEncoder.encode(request.newPassword());
+    private void updatePassword(ProfileUpdateDataRequest request, User user){
+        PasswordValidator.validate(request,user,passwordEncoder);
+        String newPasswordEncoded = passwordEncoder.encode(request.newPassword());
             user.setHashedPassword(newPasswordEncoded);
-        } else {
-            throw new InvalidPasswordException("user's password mismatch");
-        }
     }
 }
