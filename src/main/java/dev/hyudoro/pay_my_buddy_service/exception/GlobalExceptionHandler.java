@@ -54,6 +54,30 @@ public class GlobalExceptionHandler{
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "INVALID_CURRENT_PASSWORD", error.getMessage());
     }
 
+    @ExceptionHandler(PasswordMissingException.class)
+    public ResponseEntity<ErrorResponse> handle(PasswordMissingException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "PASSWORD_MISSING", error.getMessage());
+    }
+    @ExceptionHandler(PasswordComplexityException.class)
+    public ResponseEntity<ErrorResponse> handle(PasswordComplexityException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "WEAK_PASSWORD", error.getMessage());
+    }
+
+    @ExceptionHandler(EmailValidityException.class)
+    public ResponseEntity<ErrorResponse> handle(EmailValidityException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "EMAIL_NOT_RECOGNIZED", error.getMessage());
+    }
+
+    @ExceptionHandler(UsernameTooLongException.class)
+    public ResponseEntity<ErrorResponse> handle(UsernameTooLongException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "USERNAME_MAX_LENGTH", error.getMessage());
+    }
+
+    @ExceptionHandler(AlreadySelfGivenAttributeException.class)
+    public ResponseEntity<ErrorResponse> handle(AlreadySelfGivenAttributeException error){
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "ATTRIBUTE_ALREADY_SELF_GIVEN", error.getMessage());
+    }
+    //////////////////////
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String errorTag, String message){
         return ResponseEntity.status(status).body(new ErrorResponse(status.value(),errorTag,message));
     }

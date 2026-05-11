@@ -11,6 +11,7 @@
   <div class="container">
    <div th:replace="~{fragments/navbar :: navbar}"></div>
    <form th:action="@{/profile}" method="post">
+
      <div class="profile-row">
        <span class="profile-label">Username</span>
        <details class="profile-value">
@@ -18,6 +19,7 @@
          <input  type="text" name="username" placeholder="New username"/>
        </details>
      </div>
+
      <div class="profile-row">
        <span class="profile-label">Mail</span>
        <details class="profile-value">
@@ -25,21 +27,19 @@
          <input  type="text" name="email" placeholder="New e-mail"/>
        </details>
      </div>
-     <button type="submit" class="btn-orange">Modify</button>
-   </form>
 
-   <form th:action="@{/profile/password}" method="post">
      <div class="profile-row">
        <span class="profile-label">Password</span>
        <details class="profile-value">
          <summary> password </summary>
          <input type="password" name="oldPassword" placeholder="Old password">
          <input type="password" name="newPassword" placeholder="New password">
-         <button type="submit" class="btn-orange">Modify</button>
        </details>
      </div>
+     <button type="submit" class="btn-orange">Modify</button>
+
    </form>
    <p th:if="${error}" th:text="${error}" class="error-msg"></p>
-</div>
+ </div>
 </body>
 </html>
