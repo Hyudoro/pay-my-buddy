@@ -25,6 +25,4 @@ public class PasswordValidator{
         if(request.oldPassword().equals(request.newPassword()))
             throw new AlreadySelfGivenAttributeException("cannot update with the same password.");
     }
-
-
 }
