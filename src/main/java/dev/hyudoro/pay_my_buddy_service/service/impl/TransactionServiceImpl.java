@@ -15,6 +15,8 @@ import dev.hyudoro.pay_my_buddy_service.service.inter.TransactionService;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+    private static final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private final UserRepository userRepository;
     private final ConnectionRepository connectionRepository;
@@ -38,14 +41,17 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void makeTransaction(TransactionRequest request) {
-
         String senderEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.debug("Transaction attempt from: {} to receiverId: {}, amount: {}", senderEmail, request.receiverId(), request.amount());
 
         User sender = userRepository.findByEmailForUpdate(senderEmail)
             .orElseThrow(() -> new UserNotFoundException("user not found"));
         UUID senderId = sender.getId();
 
-        if(senderId.equals(request.receiverId())) throw new SelfTransactionException("user cannot send mony to himself");
+        if(senderId.equals(request.receiverId())) {
+            log.warn("Self-transaction attempt by: {}", senderEmail);
+            throw new SelfTransactionException("user cannot send mony to himself");
+        }
 
         User receiver = userRepository.findByIdForUpdate(request.receiverId())
             .orElseThrow(() -> new UserNotFoundException("receiver user not found"));
@@ -55,18 +61,27 @@ public class TransactionServiceImpl implements TransactionService {
             (senderId.toString().compareTo(receiverId.toString()) < 0 ? senderId : receiverId),
             (receiverId.toString().compareTo(senderId.toString()) > 0 ? receiverId : senderId));
 
-        if(!connectionRepository.existsById(connection)) throw new ConnectionNotFoundException("connection not found");
-        if(sender.getBalance().compareTo(request.amount()) < 0) throw new SenderInsufficientBalanceException("sender's balance is insufficient");
+        if(!connectionRepository.existsById(connection)) {
+            log.warn("Transaction rejected, no connection between {} and {}", senderEmail, receiverId);
+            throw new ConnectionNotFoundException("connection not found");
+        }
+        if(sender.getBalance().compareTo(request.amount()) < 0) {
+            log.warn("Transaction rejected, insufficient balance for {} (balance: {}, requested: {})", senderEmail, sender.getBalance(), request.amount());
+            throw new SenderInsufficientBalanceException("sender's balance is insufficient");
+        }
 
         transactionRepository.save(new Transaction(sender,receiver,request.description(),request.amount()));
         sender.setBalance(sender.getBalance().subtract(request.amount()));
-        receiver.setBalance(receiver.getBalance().add(request .amount()));
+        receiver.setBalance(receiver.getBalance().add(request.amount()));
+        log.info("Transaction completed: {} -> {} for amount: {}", senderEmail, receiver.getEmail(), request.amount());
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<UserTransactionResponse> listTransaction(Pageable pageable) {
-        User currentUser = (userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()))
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.debug("Listing transactions for: {}", userEmail);
+        User currentUser = (userRepository.findByEmail(userEmail))
             .orElseThrow(() -> new UserNotFoundException("current user not found"));
         return transactionRepository.findTransactionsOf(currentUser.getId(),pageable);
     }

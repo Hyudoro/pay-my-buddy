@@ -3,6 +3,8 @@ package dev.hyudoro.pay_my_buddy_service.service.impl;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import dev.hyudoro.pay_my_buddy_service.service.inter.ConnectionService;
 
 @Service
 public class ConnectionServiceImpl implements ConnectionService{
+    private static final Logger log = LoggerFactory.getLogger(ConnectionServiceImpl.class);
 
     private final ConnectionRepository connectionRepository;
     private final UserRepository userRepository;
@@ -32,11 +35,12 @@ public class ConnectionServiceImpl implements ConnectionService{
     @Override
     @Transactional
     public void addConnection(ConnectionRequest request) {
-
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         String connectionEmail = request.email();
+        log.debug("Add connection request: {} -> {}", userEmail, connectionEmail);
 
         if(connectionEmail.equals(userEmail)){
+            log.warn("Self-connection attempt by: {}", userEmail);
             throw new SelfConnectionException("user cannot add himself");
         }
 
@@ -49,21 +53,21 @@ public class ConnectionServiceImpl implements ConnectionService{
 
         //already a connection if exception
         if(connectionRepository.existsById(new ConnectionId(smallestId,largestId))) {
+            log.warn("Connection already exists between {} and {}", userEmail, connectionEmail);
             throw new ConnectionAlreadyExistsException("user already connected");
         } else {
             connectionRepository.save(new Connection(smallestId.equals(user.getId()) ? user : connectionUser,
                                                      (largestId.equals(connectionUser.getId())) ? connectionUser : user));
+            log.info("Connection established between {} and {}", userEmail, connectionEmail);
         }
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<UserConnectionResponse> listConnection() {
-        User currentUser = (userRepository.findByEmail(
-                         (SecurityContextHolder
-                                               .getContext()
-                                               .getAuthentication()
-                                               .getName())))
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.debug("Listing connections for: {}", userEmail);
+        User currentUser = (userRepository.findByEmail(userEmail))
                          .orElseThrow(() -> new UserNotFoundException("user not found"));
 
         List<UserConnectionResponse> connections = connectionRepository
@@ -71,6 +75,7 @@ public class ConnectionServiceImpl implements ConnectionService{
             .stream()
             .map(user -> new UserConnectionResponse(user.getUsername(),user.getId()))
             .toList();
+        log.debug("Found {} connection(s) for: {}", connections.size(), userEmail);
         return connections;
     }
 }
