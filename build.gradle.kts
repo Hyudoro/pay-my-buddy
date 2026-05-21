@@ -13,6 +13,12 @@ java {
     }
 }
 
+tasks.bootRun {
+    if (project.hasProperty("debugJvm")) {
+        jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005")
+    }
+}
+
 repositories {
     mavenCentral()
 }

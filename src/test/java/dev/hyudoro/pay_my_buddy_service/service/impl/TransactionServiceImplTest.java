@@ -69,6 +69,11 @@ class TransactionServiceImplTest {
         SecurityContextHolder.clearContext();
     }
 
+    /**
+     * {@code User.id} is a JPA-generated field with no public setter.
+     * {@link ReflectionTestUtils#setField} is used to inject a known ID
+     * so tests can reference predictable UUIDs without going through the DB.
+     */
     private User buildUserWithIdAndBalance(UUID id, String email, BigDecimal balance) {
         User user = new User();
         user.setEmail(email);

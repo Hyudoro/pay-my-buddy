@@ -1,19 +1,23 @@
 package dev.hyudoro.pay_my_buddy_service.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import dev.hyudoro.pay_my_buddy_service.dto.LoginRequest;
@@ -32,6 +36,11 @@ class AuthServiceImplTest {
     @InjectMocks
     private AuthServiceImpl authService;
 
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     void register_savesNewUser_whenEmailNotTaken() {
         // given
@@ -43,7 +52,11 @@ class AuthServiceImplTest {
         authService.register(request);
 
         // then
-        then(userRepository).should().save(any(User.class));
+        var captor = ArgumentCaptor.forClass(User.class);
+        then(userRepository).should().save(captor.capture());
+        assertThat(captor.getValue().getEmail()).isEqualTo("john@mail.com");
+        assertThat(captor.getValue().getHashedPassword()).isEqualTo("hashedPwd");
+        assertThat(captor.getValue().getUsername()).isEqualTo("john");
     }
 
     @Test
@@ -52,12 +65,13 @@ class AuthServiceImplTest {
         var request = new RegisterRequest("john", "john@mail.com", "RawPwd123!");
         given(userRepository.existsByEmail("john@mail.com")).willReturn(true);
 
-        //when
+        // when / then
         assertThatThrownBy(() -> authService.register(request))
                 .isInstanceOf(EmailAlreadyExistsException.class);
-        //then
+
         then(userRepository).should().existsByEmail("john@mail.com");
         then(userRepository).shouldHaveNoMoreInteractions();
+        then(passwordEncoder).shouldHaveNoInteractions();
     }
 
     @Test
@@ -72,5 +86,6 @@ class AuthServiceImplTest {
 
         // then
         then(authManager).should().authenticate(any(UsernamePasswordAuthenticationToken.class));
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isEqualTo(auth);
     }
 }

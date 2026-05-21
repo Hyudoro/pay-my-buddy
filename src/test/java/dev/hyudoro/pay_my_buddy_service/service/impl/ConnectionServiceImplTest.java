@@ -60,6 +60,12 @@ class ConnectionServiceImplTest {
         SecurityContextHolder.clearContext();
     }
 
+    /**
+     * {@code User.id} is a JPA-generated field with no public setter.
+     * {@link ReflectionTestUtils#setField} is used to inject an ID so the
+     * service can build a {@link dev.hyudoro.pay_my_buddy_service.entity.ConnectionId}
+     * without involving the persistence layer.
+     */
     private User buildUserWithId(String username, String email) {
         User user = new User();
         user.setUsername(username);

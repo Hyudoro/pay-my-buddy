@@ -2,7 +2,6 @@ package dev.hyudoro.pay_my_buddy_service.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -75,8 +74,8 @@ class ProfileServiceImplTest {
     void showUserData_returnsProfileResponse_whenUserExists() {
         // given
         User user = buildUser("john", AUTHENTICATED_EMAIL, "hash");
-        ReflectionTestUtils.setField(user, "balance", BigDecimal.TEN);
-        ReflectionTestUtils.setField(user, "createdAt", LocalDateTime.of(2024, 1, 1, 0, 0));
+        ReflectionTestUtils.setField(user, "balance", BigDecimal.TEN);         // no setter; JPA-managed
+        ReflectionTestUtils.setField(user, "createdAt", LocalDateTime.of(2024, 1, 1, 0, 0)); // no setter; set at persist time
         given(userRepository.findByEmail(AUTHENTICATED_EMAIL)).willReturn(Optional.of(user));
 
         // when
@@ -116,6 +115,13 @@ class ProfileServiceImplTest {
         then(userRepository).shouldHaveNoMoreInteractions();
     }
 
+    /**
+     * When a user changes their email, the {@code Authentication} principal in
+     * {@code SecurityContextHolder} still holds the old address. The service must
+     * flush the change to the DB ({@code saveAndFlush}), then reload {@code UserDetails}
+     * under the new email to rebuild a valid token — otherwise subsequent requests
+     * would authenticate against the wrong identity.
+     */
     @Test
     void updateProfile_updatesEmailAndRefreshesSecurityContext_whenOnlyEmailProvided() {
         // given
