@@ -51,6 +51,7 @@ Authenticated endpoints require a valid session cookie obtained from login.
 
 ## Data model 
 
+```
 -- UUID generation (pgcrypto available since PG 8.3)
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
@@ -135,6 +136,7 @@ INSERT INTO transactions (sender_id, receiver_id, description, amount)
 SELECT bob.id, alice.id, 'loan repay', 100.00
 FROM bob, alice
 )
+```
 
 SELECT 'seed completed' AS status;
 
