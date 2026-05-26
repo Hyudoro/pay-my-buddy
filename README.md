@@ -136,7 +136,6 @@ INSERT INTO transactions (sender_id, receiver_id, description, amount)
 SELECT bob.id, alice.id, 'loan repay', 100.00
 FROM bob, alice
 )
-```
 
 SELECT 'seed completed' AS status;
-
+```
