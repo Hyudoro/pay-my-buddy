@@ -2,151 +2,81 @@
 
 [![CI](https://github.com/Hyudoro/pay-my-buddy/actions/workflows/ci.yml/badge.svg)](https://github.com/Hyudoro/pay-my-buddy/actions/workflows/ci.yml)
 
-Money transfer REST API built with Java 21 and Spring Boot.
+Pay My Buddy is a money transfer application between registered users: add
+connections, send them money with a description, and follow balances and
+transaction history. It has two faces over one service layer, a
+server-rendered web interface and a JSON API, both behind the same
+session-based login.
 
-## Prerequisites
+## Stack
 
-- Java 21
-- Docker
+Java 21, Spring Boot 3.5.11, Spring Security with session authentication,
+Spring Data JPA, Flyway, Thymeleaf, PostgreSQL 16, Gradle. Tests use JUnit 5,
+Mockito and Testcontainers.
 
-## Getting Started
+## Running it
 
-Clone the repository:
+You need Docker and JDK 21.
 
-```sh
-git clone https://github.com/Hyudoro/pay-my-buddy.git
-cd pay-my-buddy
-```
-
-Start the database:
+Start PostgreSQL 16:
 
 ```sh
 docker compose up -d
 ```
 
-Run the application:
+Run the app on http://localhost:8080:
 
 ```sh
 DB_PASSWORD=changeme ./gradlew bootRun
 ```
 
-The API is available at http://localhost:8080.
+The login page links to registration, so the first account can be created
+from the browser. Integration tests need no setup: they start their own
+PostgreSQL container.
 
-## Stack
+## Web interface
 
-Java 21, Spring Boot 3.5.11, PostgreSQL 16, Spring Security, Spring Data JPA, Flyway.
+| Page                  | Action                                            |
+|-----------------------|---------------------------------------------------|
+| /login, /register     | sign in, create an account                        |
+| /transfer             | send money to a connection, see paged history     |
+| /connections          | list and add connections by email                 |
+| /profile              | update username or email, change password         |
 
 ## API
 
-Authentication: POST /api/auth/register,
-                POST /api/auth/login,
-                POST /api/auth/logout
+The same features as JSON, authenticated by the session cookie from
+POST /api/auth/login.
 
-Profile: GET /api/profile,
-         PATCH /api/profile,
-         PATCH /api/profile/password
+| Request                        | Action                                   |
+|--------------------------------|------------------------------------------|
+| POST /api/auth/register        | create an account                        |
+| POST /api/auth/login           | sign in, start the session               |
+| POST /api/auth/logout          | end the session                          |
+| GET /api/profile               | the current user's profile and balance   |
+| PATCH /api/profile             | update username or email                 |
+| GET /api/connections           | list the current user's connections      |
+| POST /api/connections          | add a connection by email                |
+| GET /api/transactions          | the user's transfers, paged, newest first|
+| POST /api/transactions         | send money to a connection               |
 
+## Data
 
-Connections: GET /api/connections,
-             POST /api/connections
+Flyway creates the schema on first start, from
+src/main/resources/db/migration. Three tables:
 
+- users: UUID key, unique case-insensitive email, BCrypt password hash,
+  decimal balance
+- connections: pairs of users stored once in ascending order, enforced by a
+  CHECK constraint, so no connection can exist twice or in both directions
+- transactions: sender, receiver, description, strictly positive amount,
+  newest first by creation time
 
-Transactions: GET /api/transactions,
-              POST /api/transactions
+![Physical schema of users, connections and transactions](https://github.com/user-attachments/assets/d15241e5-acf6-467e-b2ac-5676c84b83d5)
 
-Authenticated endpoints require a valid session cookie obtained from login.
+## Tests
 
-## Data model
-
-```
--- UUID generation (pgcrypto available since PG 8.3)
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
-
-CREATE EXTENSION IF NOT EXISTS "citext";
-
--- Teardown (order matters: dependents first)
-DROP TABLE IF EXISTS transactions;
-DROP TABLE IF EXISTS connections;
-DROP TABLE IF EXISTS users;
-
--- Tables
-
-CREATE TABLE users (
-       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-       username VARCHAR(50) NOT NULL,
-       email CITEXT NOT NULL UNIQUE CHECK (char_length(email) <= 254), -- we enforce the rule at the DB lvl.
-       password_hash TEXT NOT NULL,
-       balance DECIMAL(15,2) NOT NULL DEFAULT 0,
-       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE connections (
-       user_id UUID NOT NULL REFERENCES users(id),
-       connection_user_id UUID NOT NULL REFERENCES users(id),
-
-       CONSTRAINT pk_connections
-                   PRIMARY KEY (user_id, connection_user_id),
-
-       CONSTRAINT chk_connections_ordering       -- Ensure data integrity.
-                   CHECK (user_id < connection_user_id)
-);
-
-CREATE INDEX idx_connections_connection_user_id
-       ON connections(connection_user_id);
-
--- transactions
-
-CREATE TABLE transactions (
-       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-       sender_id UUID NOT NULL REFERENCES users(id),
-       receiver_id UUID NOT NULL REFERENCES users(id),
-       description TEXT,
-       amount DECIMAL(15,2) NOT NULL,
-       created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-
-       CONSTRAINT chk_transactions_amount_positive
-                  CHECK (amount > 0)
-);
-
--- seed data (CTE)
-
-WITH
-
-alice AS (
-INSERT INTO users (username, email, password_hash,balance)
-VALUES ('alice', 'alice@gmail.com', 'aabbcc', 1000)
-RETURNING id
-),
-
-bob AS (
-INSERT INTO users (username, email,password_hash,balance)
-VALUES ('bob', 'bob@gmail.com', 'ddeeff', 1000)
-RETURNING id
-),
-
-connection_alice_bob AS (
-INSERT INTO connections (user_id, connection_user_id)
-SELECT LEAST(alice.id, bob.id),
-       GREATEST(alice.id, bob.id)
-       FROM alice, bob
-),
-
-tx_alice_to_bob AS (
-INSERT INTO transactions (sender_id, receiver_id, description, amount)
-SELECT alice.id, bob.id, 'quick loan', 100.00
-FROM alice, bob
-),
-
-tx_bob_to_alice AS (
-INSERT INTO transactions (sender_id, receiver_id, description, amount)
-SELECT bob.id, alice.id, 'loan repay', 100.00
-FROM bob, alice
-)
-
-SELECT 'seed completed' AS status;
-```
-## Physical data model
-
-<img width="1118" height="364" alt="Physical schema of users, connections and transactions" src="https://github.com/user-attachments/assets/d15241e5-acf6-467e-b2ac-5676c84b83d5" />
-
+Unit tests for the services, validators and utilities, and one integration
+test class per service, running against a real PostgreSQL 16 started by
+Testcontainers. CI runs the whole suite on every push and pull request to
+main.
