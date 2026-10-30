@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: pay_my_buddy
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_PASSWORD: changeme
     ports:
       - "5432:5432"
     volumes:
