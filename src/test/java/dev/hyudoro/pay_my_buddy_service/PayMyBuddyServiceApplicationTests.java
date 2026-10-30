@@ -1,10 +1,9 @@
 package dev.hyudoro.pay_my_buddy_service;
 
+import dev.hyudoro.pay_my_buddy_service.integration.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class PayMyBuddyServiceApplicationTests {
+class PayMyBuddyServiceApplicationTests extends AbstractIntegrationTest {
 
 	@Test
 	void contextLoads() {
