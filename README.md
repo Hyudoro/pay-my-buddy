@@ -9,25 +9,30 @@ Money transfer REST API built with Java 21 and Spring Boot.
 
 ## Getting Started
 
-Clone the repository
+Clone the repository:
 
-git clone git@github.com:Hyudoro/pay-my-buddy.git
-
+```sh
+git clone https://github.com/Hyudoro/pay-my-buddy.git
 cd pay-my-buddy
+```
 
-Start the database
+Start the database:
 
+```sh
 docker compose up -d
+```
 
-Run the application
+Run the application:
 
+```sh
 DB_PASSWORD=changeme ./gradlew bootRun
-
+```
 
 The API is available at http://localhost:8080.
 
 ## Stack
-Java 21,Spring Boot 3.5.11, PostgreSQL 16, Spring Security, Spring DataJPA, Flyway.
+
+Java 21, Spring Boot 3.5.11, PostgreSQL 16, Spring Security, Spring Data JPA, Flyway.
 
 ## API
 
@@ -49,7 +54,7 @@ Transactions: GET /api/transactions,
 
 Authenticated endpoints require a valid session cookie obtained from login.
 
-## Data model 
+## Data model
 
 ```
 -- UUID generation (pgcrypto available since PG 8.3)
@@ -139,6 +144,7 @@ FROM bob, alice
 
 SELECT 'seed completed' AS status;
 ```
-## MPD 
-<img width="1118" height="364" alt="mpd_final (2)" src="https://github.com/user-attachments/assets/d15241e5-acf6-467e-b2ac-5676c84b83d5" />
+## Physical data model
+
+<img width="1118" height="364" alt="Physical schema of users, connections and transactions" src="https://github.com/user-attachments/assets/d15241e5-acf6-467e-b2ac-5676c84b83d5" />
 
