@@ -1,5 +1,7 @@
 # Pay My Buddy
 
+[![CI](https://github.com/Hyudoro/pay-my-buddy/actions/workflows/ci.yml/badge.svg)](https://github.com/Hyudoro/pay-my-buddy/actions/workflows/ci.yml)
+
 Money transfer REST API built with Java 21 and Spring Boot.
 
 ## Prerequisites
